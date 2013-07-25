@@ -4,9 +4,6 @@
 
 package by.muna.types;
 
-import java.util.List;
-
-import by.muna.types.exceptions.ContainsHoleException;
 import by.muna.types.util.Incrementor;
 
 public interface IType {
@@ -18,19 +15,11 @@ public interface IType {
     IType getTypeParent();
     IType getTypeSpecialisation();
     
-    IType getDataParent();
-    Object getDataSpecialisation();
-    
     int getTypeArity();
-    int getDataArity() throws ContainsHoleException;
 
     boolean isTypeFilled();
-    boolean isDataFilled();
     
     IType applyType(IType type);
-    
-    IType applyData(Object o);
-    Extracted extractData();
     
     String toString(Incrementor polymorphic);
 }

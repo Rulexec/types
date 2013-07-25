@@ -65,35 +65,14 @@ public class Type implements IType {
     public IType getTypeSpecialisation() {
         return this.specialisation;
     }
-    
-    @Override
-    public IType getDataParent() {
-        throw new RuntimeException("Not supported");
-    }
-    
-    @Override
-    public IType getDataSpecialisation() {
-        throw new RuntimeException("Not supported");
-    }
-
     @Override
     public int getTypeArity() {
         return this.arity;
     }
 
     @Override
-    public int getDataArity() {
-        return this.constructor != null ? 1 : 0;
-    }
-
-    @Override
     public boolean isTypeFilled() {
         return this.arity == 0;
-    }
-
-    @Override
-    public boolean isDataFilled() {
-        return this.constructor != null;
     }
 
     @Override
@@ -116,11 +95,6 @@ public class Type implements IType {
         
         return newType;
     }
-
-    @Override
-    public IType applyData(Object o) {
-        return new Type(this.name, this.ownArity, this.parent, this.specialisation, (Constructor) o);
-    }
     
     @Override
     public String toString() {
@@ -137,9 +111,5 @@ public class Type implements IType {
         }
         
         return sb.toString();
-    }
-    @Override
-    public Extracted extractData() {
-        return new Extracted(new Type(this.name, this.ownArity, this.parent, this.specialisation), this.constructor);
     }
 }

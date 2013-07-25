@@ -4,13 +4,9 @@
 
 package by.muna.types;
 
-import java.awt.Polygon;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.RandomAccess;
+import java.util.Stack;
 import java.util.zip.CRC32;
 
-import by.muna.types.exceptions.ContainsHoleException;
 import by.muna.types.util.Incrementor;
 
 public class Constructor implements IType {
@@ -18,9 +14,6 @@ public class Constructor implements IType {
     private Type type;
     
     private IType parent, specialisation;
-    private Object data;
-    
-    private int arity;
     
     private ArgsList args;
 
@@ -33,16 +26,6 @@ public class Constructor implements IType {
         
         this.type = type;
         this.args = args;
-        
-        this.arity = 0;
-        
-        try {
-            for (Arg arg : this.args) {
-                this.arity += arg.getType().getDataArity();
-            }
-        } catch (ContainsHoleException e) {
-            this.arity = -1;
-        }
     }
     private Constructor(
         String rootName, String name, Type type, ArgsList args, IType parent, IType specialisation)
@@ -53,13 +36,38 @@ public class Constructor implements IType {
         this.specialisation = specialisation;
     }
     
+    public Type getType() {
+        return this.type;
+    }
+    
     public ArgsList getArgs() {
         return this.args;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(this.name);
+        
+        Stack<String> stack = new Stack<String>();
+        IType root = this.type;
+        
+        do {
+            IType specialisation = root.getTypeSpecialisation();
+            
+            if (specialisation == null) break;
+            
+            stack.add(specialisation.getName());
+            root = root.getTypeParent();
+        } while (root != null);
+        
+        for (String s : stack) {
+            sb.append(" ");
+            sb.append(s);
+        }
+        
+        return sb.toString();
     }
     
     @Override
@@ -81,16 +89,6 @@ public class Constructor implements IType {
     public IType getTypeSpecialisation() {
         return this.type.getTypeSpecialisation();
     }
-    
-    @Override
-    public IType getDataParent() {
-        return this.parent;
-    }
-    
-    @Override
-    public Object getDataSpecialisation() {
-        return this.specialisation;
-    }
 
     @Override
     public int getTypeArity() {
@@ -98,22 +96,8 @@ public class Constructor implements IType {
     }
 
     @Override
-    public int getDataArity() throws ContainsHoleException {
-        if (this.arity < 0) {
-            throw new ContainsHoleException();
-        } else {
-            return this.arity;
-        }
-    }
-
-    @Override
     public boolean isTypeFilled() {
         return this.type.isTypeFilled();
-    }
-
-    @Override
-    public boolean isDataFilled() {
-        return this.arity == 0;
     }
 
     public Constructor typeApplied(Type newType) {
@@ -148,46 +132,6 @@ public class Constructor implements IType {
     }
 
     @Override
-    public IType applyData(Object o) {
-        IType applied = this.args.get(0).applyData(o);
-        ArgsList rest;
-        if (this.args.size() > 1) {
-            //rest = this.args.subList(1, this.args.size() - 1);
-            
-            // TODO: Cannot cast SubList to ArgsList :(
-            
-            rest = new ArgsList();
-            rest.addAll(this.args.subList(1, this.args.size()));
-        } else {
-            rest = new ArgsList();
-        }
-        
-        if (applied.isDataFilled()) {
-            return new Constructor(
-                this.rootName,
-                this.name,
-                this.type,
-                rest,
-                this,
-                applied
-            );
-        } else {
-            ArgsList concat = new ArgsList();
-            concat.add((Arg) applied);
-            concat.addAll(rest);
-        
-            return new Constructor(
-                this.rootName,
-                this.name,
-                this.type,
-                concat,
-                this,
-                applied
-            );
-        }
-    }
-
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         
@@ -204,7 +148,7 @@ public class Constructor implements IType {
             if (!arg.isTypeFilled()) { 
                 sb.append(arg.toString(polymorphic));
             } else {
-                sb.append(arg.getRootName());
+                sb.append(arg.getName());
             }
         }
         //sb.append()
@@ -227,10 +171,6 @@ public class Constructor implements IType {
         }
         
         return sb.toString();
-    }
-    @Override
-    public Extracted extractData() {
-        return new Extracted(this.getDataParent(), this.specialisation.extractData().getData());
     }
     
     @Override

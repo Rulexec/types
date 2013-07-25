@@ -52,36 +52,16 @@ public class Arg implements IType {
         return this.type.getTypeSpecialisation();
     }
     @Override
-    public IType getDataParent() {
-        return this.type.getDataParent();
-    }
-    @Override
-    public Object getDataSpecialisation() {
-        return this.type.getDataSpecialisation();
-    }
-    @Override
     public int getTypeArity() {
         return this.type.getTypeArity();
-    }
-    @Override
-    public int getDataArity() throws ContainsHoleException {
-        return this.type.getDataArity();
     }
     @Override
     public boolean isTypeFilled() {
         return this.type.isTypeFilled();
     }
     @Override
-    public boolean isDataFilled() {
-        return this.type.isDataFilled();
-    }
-    @Override
     public IType applyType(IType type) {
         return this.newType(this.type.applyType(type));
-    }
-    @Override
-    public IType applyData(Object o) {
-        return this.newType(this.type.applyData(o));
     }
     @Override
     public String toString() {
@@ -90,9 +70,5 @@ public class Arg implements IType {
     @Override
     public String toString(Incrementor polymorphic) {
         return this.type.toString(polymorphic);
-    }
-    @Override
-    public Extracted extractData() {
-        return this.type.extractData();
     }
 }

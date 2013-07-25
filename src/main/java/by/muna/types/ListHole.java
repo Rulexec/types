@@ -76,36 +76,7 @@ public class ListHole implements IType {
 
     @Override
     public IType getTypeSpecialisation() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public IType getDataParent() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public Object getDataSpecialisation() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public int getDataArity() throws ContainsHoleException {
-        return this.list != null ? 1 : 0;
-    }
-
-    @Override
-    public boolean isDataFilled() {
-        return this.list != null;
-    }
-
-    @Override
-    public IType applyData(Object o) {
-        return new ListHole(this.type, (List<Object>) o);
-    }
-    @Override
-    public Extracted extractData() {
-        return new Extracted(new ListHole(this.type), this.list);
+        return this.type;
     }
 
 }

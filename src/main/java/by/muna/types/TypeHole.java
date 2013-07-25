@@ -13,6 +13,10 @@ public class TypeHole implements IType {
     public TypeHole(int holeId) {
         this.holeId = holeId;
     }
+    
+    public int getHoleId() {
+        return this.holeId;
+    }
 
     @Override
     public String getName() {
@@ -40,33 +44,13 @@ public class TypeHole implements IType {
     }
 
     @Override
-    public IType getDataParent() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public Object getDataSpecialisation() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
     public int getTypeArity() {
         return this.holeId + 1;
     }
 
     @Override
-    public int getDataArity() throws ContainsHoleException {
-        throw new ContainsHoleException();
-    }
-
-    @Override
     public boolean isTypeFilled() {
         return false;
-    }
-
-    @Override
-    public boolean isDataFilled() {
-        throw new RuntimeException("Not implemented");
     }
 
     @Override
@@ -79,11 +63,6 @@ public class TypeHole implements IType {
     }
 
     @Override
-    public IType applyData(Object o) {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
     public String toString() {
         return this.getName();
     }
@@ -91,10 +70,5 @@ public class TypeHole implements IType {
     @Override
     public String toString(Incrementor polymorphic) {
         return this.getName();
-    }
-
-    @Override
-    public Extracted extractData() {
-        throw new RuntimeException("Not implemented");
     }
 }
