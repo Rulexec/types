@@ -14,20 +14,22 @@ public class Type implements IType {
     private int ownArity;
     private int arity;
     
-    IType parent, specialisation;
+    private Type root;
+    private IType parent, specialisation;
     
     private Constructor constructor;
 
     public Type(String name) {
         this(name, 0);
     }
-    private Type(String name, int arity, IType parent, IType specialisation) {
-        this(name, arity, parent, specialisation, null);
+    private Type(Type root, String name, int arity, IType parent, IType specialisation) {
+        this(root, name, arity, parent, specialisation, null);
     }
-    private Type(String name, int arity, IType parent, IType specialisation, Constructor constructor) {
+    private Type(Type root, String name, int arity, IType parent, IType specialisation, Constructor constructor) {
         this.name = name;
         this.parent = parent;
         this.specialisation = specialisation;
+        this.root = root;
         
         this.ownArity = arity;
         this.arity = this.ownArity + (this.specialisation != null ? this.specialisation.getTypeArity() : 0);
@@ -39,6 +41,7 @@ public class Type implements IType {
         this.ownArity = arity;
         this.arity = arity;
         this.constructor = null;
+        this.root = this;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class Type implements IType {
     
     @Override
     public String getRootName() {
-        return this.name;
+        return this.root.getName();
     }
 
     @Override
@@ -88,7 +91,7 @@ public class Type implements IType {
             newOwnArity--;
         }
         
-        Type newType = new Type(this.name + " " + name, newOwnArity, this, type);
+        Type newType = new Type(this.root, this.name + " " + name, newOwnArity, this, type);
         if (this.constructor != null) {
             newType.constructor = (Constructor) this.constructor.typeApplied(newType);
         }

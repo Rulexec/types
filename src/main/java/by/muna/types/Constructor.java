@@ -10,8 +10,10 @@ import java.util.zip.CRC32;
 import by.muna.types.util.Incrementor;
 
 public class Constructor implements IType {
-    private String name, rootName;
+    private String name;
     private Type type;
+    
+    private Constructor root;
     
     private IType parent, specialisation;
     
@@ -22,16 +24,16 @@ public class Constructor implements IType {
     }
     public Constructor(String name, Type type, ArgsList args) {
         this.name = name;
-        this.rootName = this.name;
+        this.root = this;
         
         this.type = type;
         this.args = args;
     }
     private Constructor(
-        String rootName, String name, Type type, ArgsList args, IType parent, IType specialisation)
+        Constructor root, String name, Type type, ArgsList args, IType parent, IType specialisation)
     {
         this(name, type, args);
-        this.rootName = rootName;
+        this.root = root;
         this.parent = parent;
         this.specialisation = specialisation;
     }
@@ -72,7 +74,7 @@ public class Constructor implements IType {
     
     @Override
     public String getRootName() {
-        return this.rootName;
+        return this.root.getName();
     }
 
     @Override
@@ -111,7 +113,7 @@ public class Constructor implements IType {
             }
         }
     
-        return new Constructor(this.rootName, this.name, newType,
+        return new Constructor(this.root, this.name, newType,
             newArgs, this.parent, this.specialisation);
     }
 
@@ -127,7 +129,7 @@ public class Constructor implements IType {
             }
         }
     
-        return new Constructor(this.rootName, this.name, (Type) this.type.applyType(type),
+        return new Constructor(this.root, this.name, (Type) this.type.applyType(type),
             newArgs, this.parent, this.specialisation);
     }
 

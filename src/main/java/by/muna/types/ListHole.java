@@ -27,7 +27,7 @@ public class ListHole implements IType {
     
     @Override
     public String getName() {
-        return "[" + this.type.getName() + "]";
+        return "# [ " + this.type.getName() + " ]";
     }
     
     @Override
