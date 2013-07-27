@@ -1,116 +1,75 @@
-// Communa powered.
-// License for code below available at: http://com.muna.by/licenses/25
-// SHA1 of license is: 2f802e7dc90e37e21708da5f235c8a050b3ca818
-
 package by.muna.types;
 
-import java.util.List;
 
-import by.muna.types.util.Incrementor;
+public class Type extends AbstractType {
+    private Type root, parent;
+    private IType specialisation;
 
-public class Type implements IType {
-    private String name;
-    
-    private int ownArity;
-    private int arity;
-    
-    private Type root;
-    private IType parent, specialisation;
-    
-    private Constructor constructor;
-
+    private Type(Type root, Type parent, String name, int arity, IType specialisation) {
+        super(TypeType.TYPE, name, root.getRootName(), arity);
+        
+        this.root = root;
+        this.parent = parent;
+        this.specialisation = specialisation;
+    }
     public Type(String name) {
         this(name, 0);
     }
-    private Type(Type root, String name, int arity, IType parent, IType specialisation) {
-        this(root, name, arity, parent, specialisation, null);
-    }
-    private Type(Type root, String name, int arity, IType parent, IType specialisation, Constructor constructor) {
-        this.name = name;
-        this.parent = parent;
-        this.specialisation = specialisation;
-        this.root = root;
-        
-        this.ownArity = arity;
-        this.arity = this.ownArity + (this.specialisation != null ? this.specialisation.getTypeArity() : 0);
-        
-        this.constructor = constructor;
-    }
     public Type(String name, int arity) {
-        this.name = name;
-        this.ownArity = arity;
-        this.arity = arity;
-        this.constructor = null;
+        super(TypeType.TYPE, name, name, arity);
+        
         this.root = this;
     }
-
+    
     @Override
-    public String getName() {
-        return this.name;
+    public IType getRoot() {
+        return this.root;
     }
     
     @Override
-    public String getRootName() {
-        return this.root.getName();
-    }
-
-    @Override
-    public boolean isType() {
-        return true;
-    }
-    
-    @Override
-    public IType getTypeParent() {
+    public IType getParent() {
         return this.parent;
     }
     
     @Override
-    public IType getTypeSpecialisation() {
+    public IType getSpecialisation() {
         return this.specialisation;
     }
-    @Override
-    public int getTypeArity() {
-        return this.arity;
-    }
-
-    @Override
-    public boolean isTypeFilled() {
-        return this.arity == 0;
-    }
-
+    
     @Override
     public IType applyType(IType type) {
-        if (this.isTypeFilled()) throw new RuntimeException("Type already filled");
-        
-        String name = type.getName();
-        int newOwnArity = this.ownArity;
-        
-        if (this.specialisation != null && this.specialisation.getTypeArity() > 0) {
-            type = this.specialisation.applyType(type);
+        if (this.specialisation != null) {
+            if (this.specialisation.getArity() > 0) {
+                IType applied = this.specialisation.applyType(type);
+            
+                String name = this.parent.name + " " + applied.getName();
+                int arity = this.arity - 1 + applied.getArity();
+            
+                return new Type(
+                    this.root, this,
+                    name,
+                    arity, applied
+                );
+            } else {
+                return new Type(
+                    this.root, this,
+                    this.name + " " + type.getName(),
+                    this.arity - 1 + type.getArity(), type
+                );
+            }
         } else {
-            newOwnArity--;
+            return new Type(this.root, this, this.name + " " + type.getName(), this.arity - 1, type);
         }
-        
-        Type newType = new Type(this.root, this.name + " " + name, newOwnArity, this, type);
-        if (this.constructor != null) {
-            newType.constructor = (Constructor) this.constructor.typeApplied(newType);
-        }
-        
-        return newType;
     }
     
     @Override
     public String toString() {
-        return this.toString(new Incrementor());
-    }
-    public String toString(Incrementor polymorphic) {
         StringBuilder sb = new StringBuilder();
         
         sb.append(this.name);
         
         for (int i = 0; i < this.arity; i++) {
-            sb.append(" @");
-            sb.append(Integer.toString(polymorphic.getValue()));
+            sb.append(" @").append(Integer.toString(i));
         }
         
         return sb.toString();

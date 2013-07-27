@@ -1,65 +1,38 @@
-// Communa powered.
-// License for code below available at: http://com.muna.by/licenses/25
-// SHA1 of license is: 2f802e7dc90e37e21708da5f235c8a050b3ca818
-
 package by.muna.types;
 
-import by.muna.types.exceptions.ContainsHoleException;
-import by.muna.types.util.Incrementor;
+import by.muna.types.exceptions.TypeIsFilledException;
 
-public class DataHole implements IType {
-    private DataHole(Object data) {
-    }
-    public DataHole() {
-    }
+public class DataHole extends AbstractType {
+    public static final DataHole HOLE = new DataHole();
 
-    @Override
-    public String getName() {
-        return "?";
+    private static final String c = "?";
+
+    private DataHole() {
+        super(TypeType.PSEUDO, DataHole.c, DataHole.c, 0);
     }
     
     @Override
-    public String getRootName() {
-        return this.getName();
+    public IType getRoot() {
+        return this;
     }
-
+    
     @Override
-    public boolean isType() {
-        return false;
+    public IType getParent() {
+        return null;
     }
-
+    
     @Override
-    public IType getTypeParent() {
-        throw new RuntimeException("Not implemented");
+    public IType getSpecialisation() {
+        return null;
     }
-
-    @Override
-    public IType getTypeSpecialisation() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public int getTypeArity() {
-        return 0;
-    }
-
-    @Override
-    public boolean isTypeFilled() {
-        return true;
-    }
-
+    
     @Override
     public IType applyType(IType type) {
-        throw new RuntimeException("Not implemented");
+        throw new TypeIsFilledException();
     }
 
     @Override
     public String toString() {
-        return this.getName();
-    }
-
-    @Override
-    public String toString(Incrementor polymorphic) {
-        return this.getName();
+        return DataHole.c;
     }
 }

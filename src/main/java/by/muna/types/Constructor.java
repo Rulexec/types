@@ -1,186 +1,110 @@
-// Communa powered.
-// License for code below available at: http://com.muna.by/licenses/25
-// SHA1 of license is: 2f802e7dc90e37e21708da5f235c8a050b3ca818
-
 package by.muna.types;
 
-import java.util.Stack;
-import java.util.zip.CRC32;
 
-import by.muna.types.util.Incrementor;
-
-public class Constructor implements IType {
-    private String name;
+public class Constructor extends AbstractType {
     private Type type;
-    
-    private Constructor root;
-    
-    private IType parent, specialisation;
-    
-    private ArgsList args;
 
-    public Constructor(String name, Type type) {
-        this(name, type, new ArgsList());
-    }
-    public Constructor(String name, Type type, ArgsList args) {
-        this.name = name;
-        this.root = this;
+    private Constructor root, parent;
+    private IType specialisation;
+    
+    private ConstructorArgs args;
+
+    public Constructor(
+        Constructor root, Constructor parent,
+        String name, Type type,
+        ConstructorArgs args, IType specialisation)
+    {
+        super(TypeType.CONSTRUCTOR, name, name, type.getArity());
         
         this.type = type;
-        this.args = args;
-    }
-    private Constructor(
-        Constructor root, String name, Type type, ArgsList args, IType parent, IType specialisation)
-    {
-        this(name, type, args);
+        
         this.root = root;
         this.parent = parent;
         this.specialisation = specialisation;
+        
+        this.args = args;
     }
-    
-    public Type getType() {
-        return this.type;
+    public Constructor(String name, Type type) {
+        this(name, type, new ConstructorArgs());
     }
-    
-    public ArgsList getArgs() {
-        return this.args;
-    }
-
-    @Override
-    public String getName() {
-        StringBuilder sb = new StringBuilder();
+    public Constructor(String name, Type type, ConstructorArgs args) {
+        super(TypeType.CONSTRUCTOR, name, name, type.getArity());
         
-        sb.append(this.name);
+        this.root = this;
+        this.type = type;
         
-        Stack<String> stack = new Stack<String>();
-        IType root = this.type;
-        
-        do {
-            IType specialisation = root.getTypeSpecialisation();
-            
-            if (specialisation == null) break;
-            
-            stack.add(specialisation.getName());
-            root = root.getTypeParent();
-        } while (root != null);
-        
-        for (String s : stack) {
-            sb.append(" ");
-            sb.append(s);
-        }
-        
-        return sb.toString();
+        this.args = args;
     }
     
     @Override
-    public String getRootName() {
-        return this.root.getName();
-    }
-
-    @Override
-    public boolean isType() {
-        return false;
+    public IType getRoot() {
+        return this.root;
     }
     
     @Override
-    public IType getTypeParent() {
-        return this.type.getTypeParent();
+    public IType getParent() {
+        return this.parent;
     }
     
     @Override
-    public IType getTypeSpecialisation() {
-        return this.type.getTypeSpecialisation();
+    public IType getSpecialisation() {
+        return this.specialisation;
     }
-
-    @Override
-    public int getTypeArity() {
-        return this.type.getTypeArity();
-    }
-
-    @Override
-    public boolean isTypeFilled() {
-        return this.type.isTypeFilled();
-    }
-
-    public Constructor typeApplied(Type newType) {
-        ArgsList newArgs = new ArgsList();
-        
-        for (Arg arg : this.args) {
-            if (!arg.isTypeFilled()) {
-                newArgs.add((Arg) arg.applyType(newType));
-            } else {
-                newArgs.add(arg);
-            }
-        }
     
-        return new Constructor(this.root, this.name, newType,
-            newArgs, this.parent, this.specialisation);
-    }
-
     @Override
     public IType applyType(IType type) {
-        ArgsList newArgs = new ArgsList();
-    
-        for (Arg arg : this.args) {
-            if (!arg.isTypeFilled()) {
-                newArgs.add((Arg) arg.applyType(type));
+        Type newType = (Type) this.type.applyType(type);
+        
+        int argCount = this.args.getCount();
+        ConstructorArg[] newArgsArray = new ConstructorArg[argCount];
+        
+        for (int i = 0; i < argCount; i++) {
+            ConstructorArg oldArg = this.args.get(i);
+            IType argOldType = oldArg.getType();
+            IType argNewType;
+            
+            if (argOldType.getArity() > 0) {
+                argNewType = argOldType.applyType(type);
             } else {
-                newArgs.add(arg);
+                argNewType = argOldType;
             }
+        
+            newArgsArray[i] = new ConstructorArg(
+                oldArg.getName(),
+                argNewType
+            );
         }
-    
-        return new Constructor(this.root, this.name, (Type) this.type.applyType(type),
-            newArgs, this.parent, this.specialisation);
+        
+        ConstructorArgs newArgs = new ConstructorArgs(newArgsArray);
+        
+        return new Constructor(this.root, this.parent, this.name, newType, newArgs, type);
     }
-
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         
-        sb.append(this.name);
+        sb.append(this.rootName);
         
-        Incrementor polymorphic = new Incrementor();
-        
-        for (Arg arg : this.args) {
+        for (ConstructorArg arg : this.args) {
+            String name = arg.getName();
+            IType type = arg.getType();
+            
             sb.append(' ');
-            if (arg.getArgName() != null) {
-                sb.append(arg.getArgName());
-                sb.append(':');
+            
+            if (name != null) {
+                sb.append(name).append(':');
             }
-            if (!arg.isTypeFilled()) { 
-                sb.append(arg.toString(polymorphic));
-            } else {
-                sb.append(arg.getName());
-            }
-        }
-        //sb.append()
-        
-        sb.append(" = ");
-        sb.append(this.type.toString());
-        //return this.toString(new Incrementor());
-        
-        return sb.toString();
-    }
-    @Override
-    public String toString(Incrementor polymorphic) {
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append(this.name);
-        
-        for (IType arg : this.args) {
-            sb.append(' ');
-            sb.append(arg.toString(polymorphic));
+            
+            sb.append(type.getName());
         }
         
+        sb.append(" = ").append(this.type.toString());
+        
+        /*for (int i = 0; i < this.arity; i++) {
+            sb.append(" @").append(Integer.toString(i));
+        }*/
+        
         return sb.toString();
-    }
-    
-    @Override
-    public int hashCode() {
-        CRC32 crc = new CRC32();
-        
-        crc.update(this.toString().getBytes());
-        
-        return (int) crc.getValue();
     }
 }

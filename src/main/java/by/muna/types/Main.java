@@ -7,10 +7,10 @@ public class Main {
         
         Type eitherType = new Type("Either", 2);
         
-        Constructor left = new Constructor("left", eitherType, new ArgsList(
+        Constructor left = new Constructor("left", eitherType, new ConstructorArgs(
             new TypeHole(0)
         ));
-        Constructor right = new Constructor("right", eitherType, new ArgsList(
+        Constructor right = new Constructor("right", eitherType, new ConstructorArgs(
             new TypeHole(1)
         ));
         
