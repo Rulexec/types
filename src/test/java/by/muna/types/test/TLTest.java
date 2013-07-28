@@ -10,9 +10,9 @@ public class TLTest {
 
     @Test
     public void testId() {
-        Constructor c = Tests.EITHER_RIGHT
-            .applyType(Tests.INT)
-            .applyType(Tests.VECTOR_TYPE.applyType(Tests.STRING));
+        Constructor c = TypesTest.EITHER_RIGHT
+            .applyType(TypesTest.INT)
+            .applyType(TypesTest.VECTOR_TYPE.applyType(TypesTest.STRING));
         
         Assert.assertEquals("right Vector string = Either int Vector string", c.toString());
         Assert.assertEquals(0xe791b041, c.getId());
