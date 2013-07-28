@@ -27,7 +27,7 @@ public class VectorHole extends AbstractType {
     
     @Override
     public IType applyType(IType type) {
-        return new VectorHole(type.applyType(type));
+        return new VectorHole(this.type.applyType(type));
     }
 
     @Override

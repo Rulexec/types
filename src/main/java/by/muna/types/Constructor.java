@@ -11,12 +11,23 @@ public class Constructor extends AbstractType {
 
     public Constructor(
         Constructor root, Constructor parent,
-        String name, Type type,
+        Type type,
         ConstructorArgs args, IType specialisation)
     {
-        super(TypeType.CONSTRUCTOR, name, name, type.getArity());
+        //super(TypeType.CONSTRUCTOR, root.getName() + " " + type.getTypesString(), rootName, type.getArity());
+        this.typeType = TypeType.CONSTRUCTOR;
+        this.arity = type.getArity();
+        
+        this.rootName = root.getName();
         
         this.type = type;
+        
+        String typesString = this.type.getTypesString();
+        if (typesString != null) {
+            this.name = this.rootName + " " + typesString;
+        } else {
+            this.name = this.rootName;
+        }
         
         this.root = root;
         this.parent = parent;
@@ -36,6 +47,14 @@ public class Constructor extends AbstractType {
         this.args = args;
     }
     
+    public Type getType() {
+        return this.type;
+    }
+    
+    public ConstructorArgs getArgs() {
+        return this.args;
+    }
+    
     @Override
     public IType getRoot() {
         return this.root;
@@ -52,8 +71,8 @@ public class Constructor extends AbstractType {
     }
     
     @Override
-    public IType applyType(IType type) {
-        Type newType = (Type) this.type.applyType(type);
+    public Constructor applyType(IType type) {
+        Type newType = this.type.applyType(type);
         
         int argCount = this.args.getCount();
         ConstructorArg[] newArgsArray = new ConstructorArg[argCount];
@@ -77,7 +96,7 @@ public class Constructor extends AbstractType {
         
         ConstructorArgs newArgs = new ConstructorArgs(newArgsArray);
         
-        return new Constructor(this.root, this.parent, this.name, newType, newArgs, type);
+        return new Constructor(this.root, this.parent, newType, newArgs, type);
     }
     
     @Override

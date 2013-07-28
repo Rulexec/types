@@ -6,13 +6,15 @@ public abstract class AbstractType implements IType {
     protected String rootName;
     protected int arity;
 
-    public AbstractType(TypeType typeType, String name, String typeName) {
+    public AbstractType() {
+    }
+    public AbstractType(TypeType typeType, String name, String rootName) {
         this.typeType = typeType;
         this.name = name;
-        this.rootName = typeName;
+        this.rootName = rootName;
     }
-    public AbstractType(TypeType typeType, String name, String typeName, int arity) {
-        this(typeType, name, typeName);
+    public AbstractType(TypeType typeType, String name, String rootName, int arity) {
+        this(typeType, name, rootName);
         this.arity = arity;
     }
 

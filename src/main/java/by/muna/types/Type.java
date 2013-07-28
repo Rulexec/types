@@ -4,13 +4,16 @@ package by.muna.types;
 public class Type extends AbstractType {
     private Type root, parent;
     private IType specialisation;
+    private String typesString;
 
-    private Type(Type root, Type parent, String name, int arity, IType specialisation) {
-        super(TypeType.TYPE, name, root.getRootName(), arity);
+    private Type(Type root, Type parent, String rootName, String typesString, int arity, IType specialisation) {
+        super(TypeType.TYPE, rootName + " " + typesString, rootName, arity);
         
         this.root = root;
         this.parent = parent;
         this.specialisation = specialisation;
+        
+        this.typesString = typesString;
     }
     public Type(String name) {
         this(name, 0);
@@ -19,6 +22,10 @@ public class Type extends AbstractType {
         super(TypeType.TYPE, name, name, arity);
         
         this.root = this;
+    }
+    
+    public String getTypesString() {
+        return this.typesString;
     }
     
     @Override
@@ -37,28 +44,32 @@ public class Type extends AbstractType {
     }
     
     @Override
-    public IType applyType(IType type) {
+    public Type applyType(IType type) {
         if (this.specialisation != null) {
             if (this.specialisation.getArity() > 0) {
                 IType applied = this.specialisation.applyType(type);
             
-                String name = this.parent.name + " " + applied.getName();
+                String typesString = this.parent.typesString + " " + applied.getName();
                 int arity = this.arity - 1 + applied.getArity();
             
                 return new Type(
                     this.root, this,
-                    name,
+                    this.rootName, typesString,
                     arity, applied
                 );
             } else {
                 return new Type(
                     this.root, this,
-                    this.name + " " + type.getName(),
+                    this.rootName, (this.typesString != null ? this.typesString + " " : "") + type.getName(),
                     this.arity - 1 + type.getArity(), type
                 );
             }
         } else {
-            return new Type(this.root, this, this.name + " " + type.getName(), this.arity - 1, type);
+            return new Type(
+                this.root, this, 
+                this.rootName, (this.typesString != null ? this.typesString + " " : "") + type.getName(), 
+                this.arity - 1, type
+            );
         }
     }
     
