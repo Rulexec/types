@@ -1,5 +1,7 @@
 package by.muna.types;
 
+import java.util.zip.CRC32;
+
 
 public class Constructor extends AbstractType {
     private Type type;
@@ -8,6 +10,7 @@ public class Constructor extends AbstractType {
     private IType specialisation;
     
     private ConstructorArgs args;
+    private int id;
 
     public Constructor(
         Constructor root, Constructor parent,
@@ -34,6 +37,10 @@ public class Constructor extends AbstractType {
         this.specialisation = specialisation;
         
         this.args = args;
+        
+        if (this.arity == 0) {
+            this.id = Constructor.calcCRC32(this.toString());
+        }
     }
     public Constructor(String name, Type type) {
         this(name, type, new ConstructorArgs());
@@ -45,6 +52,14 @@ public class Constructor extends AbstractType {
         this.type = type;
         
         this.args = args;
+        
+        if (this.arity == 0) {
+            this.id = Constructor.calcCRC32(this.toString());
+        }
+    }
+    
+    public int getId() {
+        return this.id;
     }
     
     public Type getType() {
@@ -125,5 +140,23 @@ public class Constructor extends AbstractType {
         }*/
         
         return sb.toString();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Constructor && this.id == ((Constructor) o).id;
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
+    
+    public static int calcCRC32(String string) {
+        CRC32 crc = new CRC32();
+        
+        crc.update(string.getBytes());
+        
+        return (int) crc.getValue();
     }
 }
