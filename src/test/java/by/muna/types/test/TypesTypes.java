@@ -10,7 +10,7 @@ import by.muna.types.Type;
 import by.muna.types.TypeHole;
 import by.muna.types.VectorHole;
 
-public class Tests {
+public class TypesTest {
 
     public static final Type INT_TYPE = new Type("Int");
     public static final Constructor INT = new Constructor(
