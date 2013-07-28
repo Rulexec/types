@@ -14,32 +14,32 @@ public class TypesTest {
 
     public static final Type INT_TYPE = new Type("Int");
     public static final Constructor INT = new Constructor(
-        "int", Tests.INT_TYPE, new ConstructorArgs(DataHole.HOLE)
+        "int", TypesTest.INT_TYPE, new ConstructorArgs(DataHole.HOLE)
     );
     
     public static final Type LONG_TYPE = new Type("Long");
     public static final Constructor LONG = new Constructor(
-        "long", Tests.LONG_TYPE, new ConstructorArgs(DataHole.HOLE)
+        "long", TypesTest.LONG_TYPE, new ConstructorArgs(DataHole.HOLE)
     );
     
     public static final Type STRING_TYPE = new Type("String");
     public static final Constructor STRING = new Constructor(
-        "string", Tests.STRING_TYPE, new ConstructorArgs(DataHole.HOLE)
+        "string", TypesTest.STRING_TYPE, new ConstructorArgs(DataHole.HOLE)
     );
     
     public static final Type VECTOR_TYPE = new Type("Vector", 1);
     public static final Constructor VECTOR = new Constructor(
-        "vector", Tests.VECTOR_TYPE,
+        "vector", TypesTest.VECTOR_TYPE,
         new ConstructorArgs(new VectorHole(new TypeHole(0)))
     );
     
     public static final Type EITHER_TYPE = new Type("Either", 2);
     
     public static final Constructor EITHER_LEFT = new Constructor(
-        "left", Tests.EITHER_TYPE, new ConstructorArgs(new TypeHole(0))
+        "left", TypesTest.EITHER_TYPE, new ConstructorArgs(new TypeHole(0))
     );
     public static final Constructor EITHER_RIGHT = new Constructor(
-        "right", Tests.EITHER_TYPE, new ConstructorArgs(new TypeHole(1))
+        "right", TypesTest.EITHER_TYPE, new ConstructorArgs(new TypeHole(1))
     );
 
     @Test
@@ -73,8 +73,8 @@ public class TypesTest {
             new ConstructorArgs(new VectorHole(new TypeHole(0)))
         );
         
-        Constructor intVector = vector.applyType(Tests.INT);
-        Constructor typeIntVector = vector.applyType(Tests.INT_TYPE);
+        Constructor intVector = vector.applyType(TypesTest.INT);
+        Constructor typeIntVector = vector.applyType(TypesTest.INT_TYPE);
         
         Assert.assertEquals("vector # [ @0 ] = Vector @0", vector.toString());
         Assert.assertEquals("vector # [ int ] = Vector int", intVector.toString());
@@ -97,8 +97,8 @@ public class TypesTest {
             new ConstructorArgs(new TypeHole(1))
         );
         
-        Constructor leftIntTypeInt = left.applyType(Tests.INT).applyType(Tests.INT_TYPE);
-        Constructor rightIntTypeInt = right.applyType(Tests.INT).applyType(Tests.INT_TYPE);
+        Constructor leftIntTypeInt = left.applyType(TypesTest.INT).applyType(TypesTest.INT_TYPE);
+        Constructor rightIntTypeInt = right.applyType(TypesTest.INT).applyType(TypesTest.INT_TYPE);
         
         Assert.assertEquals("left int = Either int Int", leftIntTypeInt.toString());
         Assert.assertEquals("right Int = Either int Int", rightIntTypeInt.toString());
@@ -111,11 +111,11 @@ public class TypesTest {
         Constructor user = new Constructor(
             "user", userType,
             new ConstructorArgs(
-                "name", Tests.STRING,
-                "numbers", Tests.VECTOR_TYPE.applyType(Tests.INT),
-                "bazinga", Tests.VECTOR.applyType(
-                    Tests.VECTOR_TYPE.applyType(
-                        Tests.EITHER_LEFT.applyType(Tests.STRING).applyType(Tests.LONG_TYPE)
+                "name", TypesTest.STRING,
+                "numbers", TypesTest.VECTOR_TYPE.applyType(TypesTest.INT),
+                "bazinga", TypesTest.VECTOR.applyType(
+                    TypesTest.VECTOR_TYPE.applyType(
+                        TypesTest.EITHER_LEFT.applyType(TypesTest.STRING).applyType(TypesTest.LONG_TYPE)
                     )
                 )
             )
