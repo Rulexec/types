@@ -34,7 +34,7 @@ public class Type extends AbstractType {
     }
     
     @Override
-    public IType getParent() {
+    public Type getParent() {
         return this.parent;
     }
     
