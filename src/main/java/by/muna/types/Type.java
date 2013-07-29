@@ -49,11 +49,18 @@ public class Type extends AbstractType {
             if (this.specialisation.getArity() > 0) {
                 IType applied = this.specialisation.applyType(type);
             
-                String typesString = this.parent.typesString + " " + applied.getName();
+                String typesString;
+                
+                if (this.parent.typesString != null) {
+                    typesString = this.parent.typesString + " " + applied.getName();
+                } else {
+                    typesString = applied.getName();
+                }
+                
                 int arity = this.arity - 1 + applied.getArity();
             
                 return new Type(
-                    this.root, this,
+                    this.root, this.parent,
                     this.rootName, typesString,
                     arity, applied
                 );
@@ -68,7 +75,7 @@ public class Type extends AbstractType {
             return new Type(
                 this.root, this, 
                 this.rootName, (this.typesString != null ? this.typesString + " " : "") + type.getName(), 
-                this.arity - 1, type
+                this.arity - 1 + type.getArity(), type
             );
         }
     }

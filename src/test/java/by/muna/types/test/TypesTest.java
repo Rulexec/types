@@ -6,6 +6,7 @@ import org.junit.Test;
 import by.muna.types.Constructor;
 import by.muna.types.ConstructorArgs;
 import by.muna.types.DataHole;
+import by.muna.types.IType;
 import by.muna.types.Type;
 import by.muna.types.TypeHole;
 import by.muna.types.VectorHole;
@@ -125,6 +126,47 @@ public class TypesTest {
             "user name:string numbers:Vector int bazinga:vector Vector left string Long = User",
             user.toString()
         );
+    }
+    
+    @Test
+    public void vectorParent() {
+        Constructor vectorInt = TypesTest.VECTOR.applyType(TypesTest.INT);
+        
+        Assert.assertEquals(TypesTest.VECTOR, vectorInt.getRoot());
+        Assert.assertEquals(TypesTest.VECTOR, vectorInt.getParent());
+        
+        Type vectorIntType = TypesTest.VECTOR_TYPE.applyType(TypesTest.INT);
+        
+        Assert.assertEquals(TypesTest.VECTOR_TYPE, vectorIntType.getRoot());
+        Assert.assertEquals(TypesTest.VECTOR_TYPE, vectorIntType.getParent());
+    }
+    
+    @Test
+    public void complexParent() {
+        Type eitherVector = TypesTest.EITHER_TYPE.applyType(TypesTest.VECTOR);
+        
+        Assert.assertEquals("Either vector @0 @1", eitherVector.toString());
+        Assert.assertEquals(2, eitherVector.getArity());
+        
+        Type eitherVectorInt = eitherVector.applyType(TypesTest.INT);
+        
+        Assert.assertEquals("Either vector int @0", eitherVectorInt.toString());
+        
+        Type eitherVectorIntLong = eitherVectorInt.applyType(TypesTest.LONG);
+        
+        Assert.assertEquals("Either vector int long", eitherVectorIntLong.toString());
+        
+        IType longSpec = eitherVectorIntLong.getSpecialisation();
+        
+        Assert.assertEquals(TypesTest.LONG, longSpec);
+        
+        IType vectorInt = eitherVectorIntLong.getParent().getSpecialisation();
+        
+        Assert.assertEquals("vector # [ int ] = Vector int", vectorInt.toString());
+        
+        IType eitherType = eitherVectorIntLong.getParent().getParent();
+        
+        Assert.assertEquals(TypesTest.EITHER_TYPE, eitherType);
     }
 
 }

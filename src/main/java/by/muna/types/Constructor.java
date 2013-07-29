@@ -111,7 +111,7 @@ public class Constructor extends AbstractType {
         
         ConstructorArgs newArgs = new ConstructorArgs(newArgsArray);
         
-        return new Constructor(this.root, this.parent, newType, newArgs, type);
+        return new Constructor(this.root, this.parent != null ? this.parent : this, newType, newArgs, type);
     }
     
     @Override
