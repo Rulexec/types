@@ -8,8 +8,6 @@
   <version>0.1.0-SNAPSHOT</version>
 
   <properties>
-    <jar.name>${project.artifactId}-${project.version}</jar.name>
-    <jar.directory>${project.build.directory}</jar.directory>
   </properties>
 
   <dependencies>
@@ -29,32 +27,6 @@
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.8</version>
-
-        <configuration>
-          <outputDirectory>${project.basedir}/lib/main</outputDirectory>
-          <overWriteReleases>false</overWriteReleases>
-          <overWriteSnapshots>false</overWriteSnapshots>
-          <overWriteIfNewer>true</overWriteIfNewer>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <finalName>${jar.name}</finalName>
-          <outputDirectory>${jar.directory}</outputDirectory>
-        
-          <includes>
-            <include>**/*</include>
-          </includes>
         </configuration>
       </plugin>
     </plugins>
